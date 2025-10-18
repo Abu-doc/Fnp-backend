@@ -1,32 +1,30 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
-
-// Load environment variables from .env
-dotenv.config();
+import 'dotenv/config'; // Automatically loads environment variables
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔗 Connect to MongoDB Atlas using environment variable
-mongoose.connect(process.env.MONGO_URI, {
+// 🔗 MongoDB connection using environment variable
+const mongoURI = process.env.MONGO_URI;
+mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
-.catch(err => console.error("❌ MongoDB Connection Error:", err));
+.catch(err => console.error("❌ Connection Error:", err));
 
 // 🧾 Product Schema
 const productSchema = new mongoose.Schema({
     name: String,
     price: Number,
     image: String,
-    description: String
+    description: String,
 });
 
-// ⚡ Make sure to match the collection name exactly
+// ⚡ Important: Use exact collection name
 const Product = mongoose.model("Product", productSchema, "products");
 
 // 🛍️ Get all products
@@ -50,6 +48,6 @@ app.get("/products/:id", async (req, res) => {
     }
 });
 
-// ✅ Start server
+// ✅ Start backend server using environment variable PORT or default 5000
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
